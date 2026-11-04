@@ -35,6 +35,8 @@ Antes de preguntar nada, averiguá qué skills hermanas existen. Buscá en `~/.c
 | **taste-skill** (`design-taste-frontend`) | carpeta con `scripts/draw.mjs`, `scripts/inspect.mjs` | dirección de arte, idea, construcción anti-slop, inspector en Chrome real, crítica tipo jurado |
 | **ui-ux-pro-max** | carpeta con `scripts/search.py` y `data/*.csv` | sistema de diseño base por tipo de producto, guías UX, stack, a11y, charts |
 | **impeccable** | carpeta con `scripts/impeccable` y `reference/*.md` | `init` (PRODUCT.md), `audit`, `critique`, `polish`, `harden`, `typeset`, `layout`, `adapt` |
+| **emilkowalski/skills** | carpetas `animate`, `review-animations`, `find-animation-opportunities`, `mobile-native`, `break-ui`… | criterio de animación de interfaz (qué animar, easing, duración), revisión estricta de motion, apps que se sientan nativas en el celular, stress-test con datos feos |
+| **gsap-skills** / **Motion AI Kit** (opcionales) | carpetas `gsap-core`, `gsap-scrolltrigger`…; skill `/motion` o MCP de motion.dev | implementar bien el motion en GSAP (scroll, timelines) o en Motion (componentes React); ver `orquestacion.md` § 7 |
 
 Anotá cuáles encontraste. No frenes si falta alguna: `references/orquestacion.md` dice cómo hacer
 cada paso a mano. Si faltan las tres, decíselo al usuario en una línea con los comandos de
@@ -131,30 +133,38 @@ El orden de las skills y los comandos exactos están en `references/orquestacion
 6. *Gate* → `lint.mjs` + `inspect.mjs` a 1440/768/390 con 0 FAIL, o Playwright + checklist manual.
 7. *Mirar* → crítica sobre capturas con las 14 pasadas y el score de jurado (`references/auditoria.md`
    § crítica). Arreglar los tres problemas más grandes, mirar de nuevo. Tres rondas máximo.
-8. *Movimiento* → recién ahora la capa de motion, con `prefers-reduced-motion`.
-9. *Cierre* → `impeccable audit` + `impeccable polish` (o la rúbrica técnica de `auditoria.md`),
-   y el informe.
+8. *Movimiento* → recién ahora la capa de motion: `find-animation-opportunities` para decidir dónde
+   sí y dónde no, `animate` para construir cada pieza (frecuencia → propósito → easing → duración),
+   `review-animations` al terminar. Siempre con `prefers-reduced-motion`. Detalle en
+   `orquestacion.md` § 7.
+9. *Cierre* → `impeccable audit` + `impeccable polish` (o la rúbrica técnica de `auditoria.md`);
+   `break-ui` sobre cualquier componente con datos del usuario, `mobile-native` si es app web que
+   se usa en el celular; y el informe.
 
 **Modo 2 · Auditar / rediseñar**
 
 1. *Registrar el antes* → levantar el proyecto, `inspect.mjs <url> --out design/antes` (con `--app`
-   si es pantalla de app), `lint.mjs`, `impeccable audit` + `impeccable critique`, y lectura del
-   código (framework, método de estilos, componentes, qué no se puede romper).
+   si es pantalla de app), `lint.mjs`, `impeccable audit` + `impeccable critique`,
+   `improve-animations` si el código ya tiene motion (es read-only: devuelve un plan priorizado), y
+   lectura del código (framework, método de estilos, componentes, qué no se puede romper).
 2. *Informe* → `design/AUDITORIA.md` con la rúbrica de `references/auditoria.md`: cinco dimensiones
    técnicas (0-4), crítica visual con score, lista de tells detectados, y **las tres cosas que
    más moverían la aguja**, ordenadas por impacto/riesgo.
 3. Si el usuario pidió solo *review*, parás acá y entregás el informe.
 4. *Restyle o redesign* → se mantiene el stack, el contenido y lo que funciona. Orden de trabajo:
    tipografía → color → marco (márgenes, ritmo, título, heading por sección) → estados → reemplazo
-   de componentes genéricos. Con impeccable: `typeset`, `colorize`, `layout`, `harden`, `adapt`.
+   de componentes genéricos → motion (`remove-animations` si está sobreanimada, después el plan de
+   `improve-animations`). Con impeccable: `typeset`, `colorize`, `layout`, `harden`, `adapt`.
    Un redesign vuelve al Modo 1 desde el paso 3 con el contenido real.
 5. *Probar* → `inspect.mjs --out design/despues`, comparar antes/después a cada ancho, clickear
    todo lo que andaba antes, y reportar medidas lado a lado.
 
 **Modo 3 · Sección o componente**
 
-Heredar tokens, tipografía y composición del entorno. Nada de dirección nueva. Construir, pasar el
-gate sobre la página que lo contiene, criticar la captura. Si el entorno es genérico y el usuario
+Heredar tokens, tipografía y composición del entorno. Nada de dirección nueva. Si el usuario duda
+entre variantes, `prototype` (de emilkowalski/skills) arma varias detrás de un selector para
+compararlas en vivo. Construir, pasar el gate sobre la página que lo contiene, criticar la captura,
+`break-ui` con datos de peor caso, `review-animations` si tiene movimiento. Si el entorno es genérico y el usuario
 quiere que esto resalte, decíselo: un componente lindo en una página fea se nota más, no menos.
 
 ## Reglas de la casa (valen en todos los modos)
@@ -169,7 +179,13 @@ Consolidado de las tres skills; el detalle y el porqué están en `references/an
   **sin monospace** fuera de código, **sin tracked caps**, **sin una palabra acentuada** en el
   titular (itálica, serif o color distinto).
 - **Sin gradientes, sin sombras en cosas quietas, sin glows, sin glass, sin blobs, sin emojis
-  como íconos, sin cards con ícono arriba en fila de tres**, sin hairlines decorativas.
+  como íconos, sin cards con ícono arriba en fila de tres**, sin hairlines decorativas. La única
+  sombra admitida es la de una capa flotante transitoria (menú, popover, toast, modal, algo que
+  se arrastra), semitransparente, nunca en cards ni secciones en reposo.
+- **Motion de interfaz con criterio**: lo que se usa cien veces por día no se anima (atajos de
+  teclado, paleta de comandos); entradas y salidas con `ease-out` fuerte, nunca `ease-in`; UI
+  por debajo de 300 ms; nada entra desde `scale(0)`; el movimiento de marketing puede ser más
+  largo y es el único que puede ser "para que se vea lindo".
 - **Sin paleta de asistente**: crema + terracota, violeta/índigo, negro + un neón. Si el brief la
   pide, se respeta; si el eje quedó libre, no se gasta la libertad ahí.
 - **Un ground, una tinta, un acento.** Texto corriente en tinta plena de 16 px o más; el gris es
@@ -189,6 +205,16 @@ Cuando dos skills se contradicen en gusto visual: en páginas (landing, marketin
 e-commerce) manda taste-skill; en pantallas de app mandan las reglas de app de taste-skill más las
 prioridades UX de ui-ux-pro-max; en lo técnico (a11y, performance, responsive, theming) manda
 `impeccable audit`. El brief del usuario le gana a las tres.
+
+## Si el usuario no sabe por dónde empezar
+
+Cuando pide "diseñame algo" sin más, dice "no sé por dónde arrancar" o pregunta qué skill usar
+primero, leé `references/recetas.md` y aplicá la **fórmula por defecto** sin pedir permiso para
+cada paso: design-director → `impeccable init` → `ui-ux-pro-max --design-system` → taste-skill
+(dirección, idea, construcción, gate, crítica) → Emil (`find-animation-opportunities` → `animate`
+→ `review-animations`) → `impeccable audit` → `polish` → informe. Decile en una línea que vas por
+ese camino y que puede desviarse cuando quiera. `recetas.md` tiene además la receta de cada
+situación (app web, e-commerce, auditoría, rediseño, componente, solo animaciones, poco tiempo).
 
 ## Informe final
 
@@ -219,3 +245,4 @@ No afirmes un chequeo que no corriste.
 | `references/tipos-de-producto.md` | Antes de construir. Landing, sitio institucional, app web/dashboard, e-commerce, portfolio: estructura, conversión, patrones UX propios de cada uno. |
 | `references/auditoria.md` | Modo 2 y paso 7. Rúbrica técnica (0-4 × 5), las 14 pasadas de crítica, el score de jurado, los caps, el formato del informe. |
 | `references/anti-slop.md` | Cuando dudás si algo es una decisión o un default. El registro de tells y con qué se reemplaza cada uno. |
+| `references/recetas.md` | Cuando el usuario no sabe por dónde empezar o pregunta qué skill va primero. La fórmula por defecto y una receta por situación, con lo que el usuario escribe en cada paso. |

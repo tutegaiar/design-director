@@ -6,6 +6,7 @@
 |---|---|---|---|
 | **ui-ux-pro-max** | base de datos buscable + motor de reglas (Python, sin dependencias) | orientarse rápido por tipo de producto: patrón de landing, estilo, paleta, par tipográfico, anti-patrones de la industria, 119 guías UX, 22 stacks, charts, a11y | no construye ni mira el resultado; sus estilos sugeridos a veces traen sombras suaves, glass o gradientes que las otras dos prohíben |
 | **taste-skill** (`design-taste-frontend`) | método de dirección de arte + inspector en Chrome real (Node 22+) | que la página pertenezca a *este* sujeto: inventario, argumento, tres direcciones repartidas de una librería de 247 sitios premiados, la frase de la idea, fotos reales de archivos abiertos con crédito, reglas de la casa medidas por `inspect.mjs`, crítica de jurado | es lenta y cara (30–45 min, cientos de miles de tokens por página); muy opinada: si el brief pide gradientes o glass, hay que pasarle `--allow` |
+| **emilkowalski/skills** | 16 skills de un design engineer (ex Vercel/Linear, autor de Sonner y Vaul) | el criterio de la animación de interfaz y los detalles invisibles: `animate` (decide en orden: ¿debe animar? → propósito → easing → duración → interrupción → salida), `review-animations` (estricta, "aprobar se gana"), `find-animation-opportunities` y `remove-animations` (read-only / solo resta), `animation-performance`, `mobile-native`, `break-ui`, `prototype`, `pick-ui-library`, `emil-design-eng` (la filosofía entera) | no dirige arte ni compone páginas; su gusto es el de producto (Linear, Vercel, Raycast): sombras semitransparentes, materiales, springs. En páginas de marketing manda taste-skill |
 | **impeccable** | suite de 24 comandos + detector determinístico de 62 reglas | el principio (`init` → `PRODUCT.md`, `shape`) y el final (`audit`, `critique`, `polish`, `harden`, `adapt`, `optimize`); refinamientos puntuales (`typeset`, `layout`, `colorize`, `quieter`, `bolder`); modos persuadir/operar/leer/experiencia | su flujo de "concept-seed" y páginas de decisión es pesado; para la dirección de arte de una landing, taste-skill da mejor resultado |
 
 Son complementarias porque atacan tres momentos distintos: **decidir** (ui-ux-pro-max),
@@ -201,6 +202,51 @@ imagen, 60–90 ms, 16–32 px), feedback en cada control, una imagen que se mue
 `opacity`; todo con fallback `prefers-reduced-motion` que conserva el contenido. Nada que quede
 oculto si falla el script.
 
+Tres capas, en este orden:
+
+**a) Decidir** — `find-animation-opportunities` (emilkowalski) recorre la UI y propone con
+valores exactos dónde sí y dónde no; es read-only. Para páginas, taste-skill ya trae el
+presupuesto y las *scenes* de scroll repartidas en la hoja (`references/motion.md`,
+`library/motions.json`), e impeccable `/impeccable animate` (u `overdrive` si el brief pide
+efectos extraordinarios). La regla de frecuencia de Emil pisa a todas: lo que se ve cien veces
+por día no se anima; decenas de veces, se reduce; ocasional (modal, drawer, toast), animación
+estándar; raro (onboarding, celebración), puede tener delight.
+
+**b) Construir** — `animate` (emilkowalski) para cada pieza de interfaz: toma las decisiones en
+el orden que importa (¿debe animar? → propósito → herramienta → propiedades → curva y duración →
+cómo se interrumpe → cómo sale) y escribe la implementación. Valores que usa y que vale copiar:
+entradas/salidas con `ease-out` fuerte (`cubic-bezier(0.23, 1, 0.32, 1)`), movimiento en pantalla
+con `ease-in-out` fuerte (`cubic-bezier(0.77, 0, 0.175, 1)`), drawers con la curva de iOS
+(`cubic-bezier(0.32, 0.72, 0, 1)`), nunca `ease-in` en UI; botón 100–160 ms, tooltip 125–200 ms,
+dropdown 150–250 ms, modal/drawer 200–500 ms, UI siempre < 300 ms, marketing puede ser más largo;
+nunca entrar desde `scale(0)`; `@starting-style` y transiciones CSS (interrumpibles) antes que
+keyframes; salida más rápida que entrada; springs para gestos y arrastre, no para hover. Para la
+pieza firmada de una página (scroll, timeline, texto) la API la pone la librería:
+  - **GSAP** (`greensock/gsap-skills`: gsap-core, timeline, scrolltrigger, plugins, react,
+    performance). Elegila para timelines, scroll-driven, animación de SVG/texto, o cuando el
+    proyecto es vanilla, Astro, Vue o Svelte. Instalación:
+    `npx skills add https://github.com/greensock/gsap-skills`
+  - **Motion** (ex Framer Motion; skill + MCP oficial "Motion AI Kit", `/motion`). Elegila en
+    React/Next cuando el movimiento es de componentes: layout animations, `AnimatePresence`,
+    gestos, springs. Su *Performance Doctor* audita también CSS y GSAP. Instalación: guía en
+    `https://motion.dev/docs/ai-kit-install` (la búsqueda de docs es gratis; springs CSS y
+    auditoría requieren Motion+).
+  - **CSS puro** cuando alcanza (entradas, hover, una transición): sin librería. Las scenes de
+    taste-skill ya vienen en vanilla.
+
+  No mezcles dos librerías en una misma página. Si el proyecto ya tiene una, se respeta.
+  `pick-ui-library` (emilkowalski, solo si lo invocás) elige librería para toasts, command menu,
+  drag and drop, charts, virtualización, etc., antes que inventar un componente a mano.
+
+**c) Revisar** — `review-animations` (emilkowalski) sobre el diff: por defecto marca, aprobar se
+gana. Si algo tartamudea, `animation-performance` (composite-only, main thread, `will-change`
+con motivo, costo del blur, re-render por frame en React). Si es app web que se usa en el
+celular, `mobile-native` (hover pegajoso, flash de tap, bug del 100vh, inputs que hacen zoom,
+notch, carruseles). Y `break-ui` con datos de peor caso (nombres larguísimos, cero ítems, cifras
+enormes, texto no latino) en todo componente que muestre datos del usuario.
+
+Instalación de la colección de Emil: `npx skills@latest add emilkowalski/skills`.
+
 ### 8. Cierre con impeccable
 
 ```
@@ -243,11 +289,14 @@ dependencias antes de agregar nada.
 | ui-ux-pro-max dice "mínimo 44 px de target" y taste-skill no lo mide | **ui-ux-pro-max / impeccable audit** | lo técnico-accesible siempre se cumple; taste-skill no lo contradice, solo no lo mide |
 | taste-skill pide "al menos cuatro imágenes reales" en un dashboard | **reglas de app** de taste-skill (`app-screens.md`) | el piso de imágenes es de páginas; una pantalla de app muestra datos reales, no fotos |
 | impeccable `critique` quiere "más personalidad" y taste-skill ya repartió una dirección quieta | **el brief / la dirección elegida** | una dirección adoptada se ejecuta a fondo; "más personalidad" no es un hallazgo, es gusto |
+| Emil recomienda sombra semitransparente para elevación y taste-skill prohíbe sombras en reposo | **las dos, por capa** | sombra solo en capas flotantes transitorias (menú, popover, toast, modal, algo arrastrado); nada en cards ni secciones quietas. Lo mismo con el blur: solo durante una transición para enmascararla, nunca en reposo |
+| Emil (y Apple) usan springs y materiales translúcidos; taste-skill los lee como tells de app generada | **el modo de la superficie** | springs en gestos y arrastre de una app, sí; en hover de una landing, no. Glass: no, salvo fijo del brief |
+| taste-skill reparte scenes de scroll en una pantalla de app que se usa todo el día | **la regla de frecuencia de Emil** | el movimiento de marketing es de páginas Persuadir; en Operar se anima lo ocasional y nada de lo frecuente |
 | el usuario pide un gradiente / una fuente de la lista negra / un eyebrow | **el usuario** | se anota como fijo en el brief, `--allow` en el inspector, y se dice en el informe |
 | dos herramientas dan medidas distintas de contraste | **la peor** | si una falla, falla |
 
 Regla general: en **páginas** manda taste-skill en gusto, impeccable en técnica, ui-ux-pro-max
-informa. En **pantallas de app** mandan las reglas de app de taste-skill + prioridades UX de
+informa, Emil decide el motion de los componentes. En **pantallas de app** mandan las reglas de app de taste-skill + prioridades UX de
 ui-ux-pro-max, impeccable en técnica. El brief del usuario les gana a las tres.
 
 ## Instalación (para pasarle al usuario si falta alguna)
@@ -263,6 +312,9 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-fro
 /plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
 /plugin install ui-ux-pro-max@ui-ux-pro-max-skill
 #   o:  npm i -g ui-ux-pro-max-cli && uipro init --ai claude --global
+
+# emilkowalski/skills (criterio de animación e interfaz; sin dependencias)
+npx skills@latest add emilkowalski/skills
 
 # impeccable (binario autocontenido; se descarga en el primer uso)
 npx impeccable install          # desde la raíz del proyecto; después /impeccable init

@@ -3,8 +3,9 @@
 Skill de Claude Code que actúa como director/a de diseño web: entrevista antes de construir,
 analiza páginas modelo (opcional), escribe un brief y recién después orquesta en el orden correcto
 [taste-skill](https://github.com/Leonxlnx/taste-skill),
-[ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) e
-[impeccable](https://github.com/pbakaus/impeccable), degradando bien si alguna no está instalada.
+[ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill),
+[impeccable](https://github.com/pbakaus/impeccable) y las skills de animación e interfaz de
+[Emil Kowalski](https://github.com/emilkowalski/skills), degradando bien si alguna no está instalada.
 
 Sirve para landings, sitios institucionales, apps web y dashboards, e-commerce, portfolios y docs,
 en cualquier stack. Tiene dos modos principales: **proyecto de cero** y **auditoría / rediseño**
@@ -44,7 +45,30 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill "design-taste-fro
 
 # impeccable
 npx impeccable install
+
+# emilkowalski/skills (criterio de animación e interfaz)
+npx skills@latest add emilkowalski/skills
+
+# opcionales para implementar motion: GSAP (scroll, timelines) o Motion (React)
+npx skills add https://github.com/greensock/gsap-skills
 ```
+
+## Si no sabés por dónde empezar
+
+Escribí en Claude Code: `usá la skill design-director y arrancá por la fórmula por defecto`.
+
+```
+design-director (entrevista + brief)
+→ impeccable init                       verdad del producto
+→ ui-ux-pro-max --design-system         mapa del rubro
+→ taste-skill                           dirección, idea, construcción, inspector, crítica
+→ emilkowalski/skills                   animaciones con criterio, celular, datos feos
+→ impeccable audit → polish → harden    cierre técnico
+```
+
+Cada skill toca un momento distinto; ninguna se corre dos veces sobre el mismo paso. Las recetas
+para cada situación (app web, e-commerce, auditoría, rediseño, un componente, solo animaciones,
+poco tiempo) están en [`references/recetas.md`](references/recetas.md).
 
 ## Uso
 
@@ -71,7 +95,8 @@ design-director/
     ├── orquestacion.md           orden de las tres skills, comandos, conflictos, degradación
     ├── tipos-de-producto.md      landing, institucional, app web, e-commerce, portfolio, docs
     ├── auditoria.md              rúbrica técnica, 14 pasadas de crítica, score, informe
-    └── anti-slop.md              registro de tells de página generada y reemplazos
+    ├── anti-slop.md              registro de tells de página generada y reemplazos
+    └── recetas.md                fórmula por defecto y receta por situación
 ```
 
 ## Licencia

@@ -102,6 +102,12 @@ no está diseñada.
 - **navegación**: lateral plegable o superior, ≤ 5 destinos principales, siempre se sabe dónde se
   está; en móvil la navegación se guarda y la pantalla se recompone (no es el desktop apretado).
 
+**Motion en app**: por frecuencia. Lo que se dispara con teclado o se usa cien veces por día no
+se anima (Raycast no anima abrir/cerrar, y es la experiencia óptima); hover y navegación de
+listas, casi nada; modales, drawers y toasts, animación estándar < 300 ms con `ease-out`;
+onboarding y celebraciones, ahí sí se puede jugar. Si se usa en el celular, pasarla por
+`mobile-native`. Detalle en `orquestacion.md` § 7.
+
 **Densidad**: quien usa esto 8 horas quiere ver más por pantalla (espaciado 8–32 px, cuerpo 14–15
 px es aceptable acá); quien entra una vez al mes quiere guía. Preguntalo (`entrevista.md`).
 

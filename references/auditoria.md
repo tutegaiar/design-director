@@ -14,6 +14,7 @@ node <taste>/scripts/inspect.mjs <url> --out design/antes        # o --out desig
 node <taste>/scripts/lint.mjs <fuentes>
 /impeccable audit <target>
 /impeccable critique <target>
+/improve-animations           # emilkowalski: si hay motion en el código; read-only, plan priorizado
 ```
 
 Sin herramientas: Playwright a 1440×900, 768×1024 y 390×844 (fold y página completa), y el gate
@@ -30,7 +31,7 @@ Adaptada del `audit` de impeccable; sirve con o sin él.
 | # | Dimensión | Qué mirar | 0 | 2 | 4 |
 |---|---|---|---|---|---|
 | 1 | **Accesibilidad** | contraste ≥ 4.5:1 (3:1 texto grande); foco visible y orden lógico; sin trampas de teclado; headings jerárquicos y landmarks; botones que son `<button>`; `alt`; labels en inputs; errores asociados; `prefers-reduced-motion` con alternativa que conserva el cambio de estado (no un kill global a 0.01 ms) | falla WCAG A | esfuerzo parcial, huecos grandes | AA completo, roza AAA |
-| 2 | **Performance** | imágenes en WebP/AVIF con lazy y espacio reservado (CLS < 0.1); animaciones solo de transform/opacity; sin blur/filtros sin límite; `will-change` solo donde hace falta; sin re-renders innecesarios; peso del bundle | layout thrash, todo sin optimizar | algo optimizado | rápido y liviano |
+| 2 | **Performance** | imágenes en WebP/AVIF con lazy y espacio reservado (CLS < 0.1); animaciones solo de transform/opacity (`animation-performance` de emilkowalski si algo tartamudea); sin blur/filtros sin límite; `will-change` solo donde hace falta; sin re-renders innecesarios; peso del bundle | layout thrash, todo sin optimizar | algo optimizado | rápido y liviano |
 | 3 | **Theming** | colores por tokens, no hex sueltos; modo oscuro si existe con contraste correcto; tokens consistentes; cambio de tema sin valores que no se actualizan | todo hardcodeado | tokens inconsistentes | sistema completo |
 | 4 | **Responsive** | sin anchos fijos que rompan; targets ≥ 44 px (mínimo legal 24 px con espaciado); sin scroll horizontal; texto que escala; móvil que es una composición propia; gestos táctiles que funcionan (sliders, drags) | solo desktop | anda en móvil con asperezas | fluido en todos los anchos |
 | 5 | **Integridad de implementación** | atajos repetidos, deriva del sistema, contenido decorativo o engañoso (métricas falsas, logos inventados, placeholders que parecen datos), estructura intercambiable con otro producto | deriva sistémica | varios problemas verificados | coherente e intencional |
@@ -138,6 +139,8 @@ A 1440, 768 y 390, sobre el build de producción:
 - [ ] sin scroll horizontal en 390; targets ≥ 44 px
 - [ ] imágenes: ≥ 4 reales en páginas, con `alt`, en WebP/AVIF, lazy, con espacio reservado
 - [ ] `prefers-reduced-motion` respetado; nada oculto si falla el script
+- [ ] motion: nada animado en acciones de teclado ni en lo que se usa decenas de veces por día; entradas con `ease-out` (nunca `ease-in`); UI < 300 ms; nada desde `scale(0)`; salida más corta que entrada; tooltips sin delay después del primero
+- [ ] componentes con datos del usuario pasados por `break-ui` (nombre largo, cero ítems, cifra enorme)
 - [ ] Lighthouse accesibilidad ≥ 95 y performance razonable (`npx lighthouse <url>`)
 
 ## 6. Formato del informe (`design/AUDITORIA.md`)
@@ -170,7 +173,7 @@ Alcance: <páginas/pantallas> · Modo: <persuadir/operar/leer> · Stack: <…> �
 3. …
 
 ## Plan completo, en orden
-tipografía → color → marco → estados → componentes genéricos → motion → técnica
+tipografía → color → marco → estados → componentes genéricos → motion (primero `remove-animations`, después el plan de `improve-animations`) → técnica
 <cada ítem con archivo/componente afectado y qué no se puede romper>
 
 ## Lo que funciona y se conserva

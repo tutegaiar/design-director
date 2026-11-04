@@ -110,7 +110,11 @@ carta"); cada línea solo puede ser de este sujeto; los nombres de sección son 
 Fade-up idéntico en cada bloque; una docena de entradas escalonadas en el hero; hover que levanta
 cada card; easing con rebote (bounce/elastic); loops infinitos que no significan nada; reveals que
 fallan y dejan una banda vacía; una sola duración para todas las transiciones; animar `width` o
-`height`; sin `prefers-reduced-motion`.
+`height`; sin `prefers-reduced-motion`. Y los que marca Emil Kowalski en interfaces: `ease-in` en
+una entrada (la interfaz se siente lenta justo cuando el usuario más mira); animar acciones de
+teclado o una paleta de comandos; entrar desde `scale(0)`; delay en cada tooltip de una misma
+barra; popovers que no salen de su origen; UI por encima de 300 ms; entrada y salida con el mismo
+tiempo.
 
 En su lugar: un movimiento firmado hecho bien; entradas por sección escalonadas (heading → texto →
 imagen) que no ocultan contenido si falla el script; feedback en cada control; una imagen que se
